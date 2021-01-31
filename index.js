@@ -11,8 +11,7 @@ const respondText = (req, res) => {
 };
 
 const respondJson = (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ text: 'Hi', number: [1, 2, 3]}));
+    res.json({ text: 'Hi', number: [1, 2, 3]});
 };
 
 const respondNotFound = (req, res) => {
@@ -21,19 +20,19 @@ const respondNotFound = (req, res) => {
 };
 
 const respondEcho = (req, res) => {
-    const { input = '' } = querystring.parse(req.url.slice(req.url.indexOf('?') + 1));
+    const { query: { input = '' }} = req;
 
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
+    res.json({
         normal: input,
         shouty: input.toUpperCase(),
         characterCount: input.length,
         backwards: input.split('').reverse().join(''),
-    }))
+    })
 };
 
 const respondStatic = (req, res) => {
-    const filename = `${__dirname}${req.url.replace('/static', '/public')}`;
+    console.log(req.params);
+    const filename = `${__dirname}/public/${req.params[0]}`;
 
     fs.createReadStream(filename)
         .on('error', () => respondNotFound(req, res))
